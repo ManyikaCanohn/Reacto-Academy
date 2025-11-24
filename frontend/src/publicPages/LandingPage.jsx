@@ -193,13 +193,13 @@ const LandingPage = () => {
 
             <section className="container p-5 mt-5" id='home'>
 
-                <div className="container mt-5 d-flex justify-content-center flex-column flex-lg-row gap-5 col">
+                <div className="container-fluid mt-5 d-flex justify-content-center flex-column flex-lg-row gap-5 col">
                     
                     <div data-aos='fade-up' className='w-100'>
                         <code className="mb-0"> Start your favorite course today.</code>
                         <p style={{ color: ' #06053d' }} className="mb-4 display-5 lead"> <strong>Turn Your Curiosity into Code, and Your Code into a Career.</strong> </p>
                         <p className="text-muted mb-0" id='justify'> 
-                            The world is built on technology — and you have the power to shape it.
+                            The world is built on technology and you have the power to shape it.
                             Whether you're just starting out or dreaming of your next big innovation,
                             our coding platform gives you the tools, guidance, and community to grow.
                         </p>

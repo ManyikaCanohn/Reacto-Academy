@@ -164,7 +164,7 @@ const LectureDashboard = () => {
         <>
             {/* --- DESKTOP SIDEBAR --- */}
             <div className={`position-fixed top-0 start-0 h-100 d-none d-lg-flex flex-column`}
-                 style={{ width: "250px", backgroundColor: '#06053d', color: 'white', paddingTop: '1rem', zIndex: 1050 }}>
+                    style={{ width: "250px", backgroundColor: '#06053d', color: 'white', paddingTop: '1rem', zIndex: 1050 }}>
                 <div className="d-flex justify-content-between align-items-center px-3 mb-4">
                     <p className="lead fs-4 text-light">Reacto Academy</p>
                     <button className="btn btn-sm text-light d-lg-none" onClick={() => setSidebarOpen(!sidebarOpen)}>
