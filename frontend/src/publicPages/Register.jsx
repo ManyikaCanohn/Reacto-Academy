@@ -188,7 +188,7 @@ const Register = () => {
         </div>
 
         <div className="d-flex h-50 w-50 justify-content-center align-items-center d-none d-md-block">
-          <img src={Reacto} alt="Reacto Coding College" className="img-fluid rounded" />
+          <img src={Reacto} alt="Reacto Academy" className="img-fluid rounded" />
         </div>
       </div>
     </section>
