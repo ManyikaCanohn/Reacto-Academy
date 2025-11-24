@@ -17,6 +17,7 @@ import LectureFileUpload from "./lecture/lectureComponents/LectureFileUpload"
 import AITutor from './publicPages/AITutor'
 import WikiNotes from './publicPages/WikiNotes'
 import { LectureProvider } from "./lecture/context/LectureContext";
+import PWAInstallPrompt from './PWAInstallPrompt';
 
 const App = () => {
   const token = localStorage.getItem("token");
@@ -47,6 +48,7 @@ const App = () => {
       {/* These are always visible */}
       <QuizTester />
       <AITutor />
+      <PWAInstallPrompt />
     </LectureProvider>
   )
 }

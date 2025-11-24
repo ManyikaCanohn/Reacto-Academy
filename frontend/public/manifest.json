@@ -6,8 +6,8 @@
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#ffffff",
-  "theme_color": "#06053d",
+  "background_color": " #ffffff",
+  "theme_color": " #06053d",
   "icons": [
     {
       "src": "/reacto-logo.svg",
