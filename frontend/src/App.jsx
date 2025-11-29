@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import LandingPage from './publicPages/LandingPage'
 import Register from './publicPages/Register'
 import Login from './publicPages/Login'
-import AdminDashboard from './admin/AdminDashboard'
 import LectureDashboard from './lecture/LectureDashboard'
 import StudentDashboard from './student/StudentDashboard'
 import StudentProfile from './student/studentComponents/StudentProfile'
@@ -16,40 +15,38 @@ import QuizTester from './publicPages/QuizTester'
 import LectureFileUpload from "./lecture/lectureComponents/LectureFileUpload"
 import AITutor from './publicPages/AITutor'
 import WikiNotes from './publicPages/WikiNotes'
+import { AuthProvider } from "./context/AppContext";
 import { LectureProvider } from "./lecture/context/LectureContext";
+import { LectureRoute, StudentRoute } from "./components/ProtectedRoute";
 import PWAInstallPrompt from './PWAInstallPrompt';
 
 const App = () => {
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-  const isAuthenticated = !!token;
-
   return (
-    <LectureProvider>
-      <Routes>
-        <Route path='/' element={<LandingPage />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/admindashboard' element={isAuthenticated && user.role === 'admin' ? <AdminDashboard /> : <Navigate to="/login" />} />
-        <Route path='/lecturedashboard' element={isAuthenticated && user.role === 'lecture' ? <LectureDashboard /> : <Navigate to="/login" />} />
-        <Route path='/studentdashboard' element={isAuthenticated && user.role === 'student' ? <StudentDashboard /> : <Navigate to="/login" />} />
-        <Route path='/studentassignments' element={<StudentAssignments />} />
-        <Route path='/studentnotifications' element={<StudentNotifications />} />
-        <Route path='/studentcourses' element={<StudentCourses />} />
-        <Route path='/studentprofile' element={<StudentProfile />} />
-        <Route path='/loginfirst' element={<AccountLogs />} />
-        <Route path='/studenttodoapp' element={<StudentToDoApp />} />
-        <Route path="/file" element={<LectureFileUpload />} />
-        <Route path="/courses/:language" element={<WikiNotes />} />
-        <Route path='/dashboard' element={isAuthenticated ? <StudentDashboard /> : <Navigate to="/" />} />
-      </Routes>
+    <AuthProvider>
+      <LectureProvider>
+        <Routes>
+          <Route path='/' element={<LandingPage />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/lecturedashboard' element={<LectureRoute><LectureDashboard /></LectureRoute>} />
+          <Route path='/studentdashboard' element={<StudentRoute><StudentDashboard /></StudentRoute>} />
+          <Route path='/studentassignments' element={<StudentRoute><StudentAssignments /></StudentRoute>} />
+          <Route path='/studentnotifications' element={<StudentRoute><StudentNotifications /></StudentRoute>} />
+          <Route path='/studentcourses' element={<StudentRoute><StudentCourses /></StudentRoute>} />
+          <Route path='/studentprofile' element={<StudentRoute><StudentProfile /></StudentRoute>} />
+          <Route path='/loginfirst' element={<StudentRoute><AccountLogs /></StudentRoute>} />
+          <Route path='/studenttodoapp' element={<StudentRoute><StudentToDoApp /></StudentRoute>} />
+          <Route path="/file" element={<LectureRoute><LectureFileUpload /></LectureRoute>} />
+          <Route path="/courses/:language" element={<WikiNotes />} />
+          <Route path='/dashboard' element={<StudentRoute><StudentDashboard /></StudentRoute>} />
+        </Routes>
 
-      {/* These are always visible */}
-      <QuizTester />
-      <AITutor />
-      <PWAInstallPrompt />
-    </LectureProvider>
+        {/* These are always visible */}
+        <QuizTester />
+        <AITutor />
+        <PWAInstallPrompt />
+      </LectureProvider>
+    </AuthProvider>
   )
 }
 

@@ -1,198 +1,304 @@
-import React, { useEffect, useState } from "react";
-import Reacto from "../assets/f.jpg";
-import ReactoLogo from "../assets/Reacto.jpg";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelopeOpenText, FaLock, FaSignInAlt, FaUser, FaHome, FaGoogle } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaUser, FaGithub, FaGoogle, FaFacebook, FaHome, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuth } from "../context/AppContext";
+import Toon from "../assets/g.jpg";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [role, setRole] = useState("student");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const navigate = useNavigate();
+  const { registerStudent, registerLecture, loading } = useAuth();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
 
-    if (!name || !email || !password) {
-      alert("Please fill all fields");
+    // Client-side validation
+    if (!name.trim()) {
+      setError("Please enter your full name");
       return;
     }
 
-    setIsLoading(true);
+    if (!email.trim()) {
+      setError("Please enter your email address");
+      return;
+    }
 
-    const delay = new Promise(resolve => setTimeout(resolve, 5000)); // Minimum 5 seconds
+    if (!password) {
+      setError("Please enter a password");
+      return;
+    }
+
+    if (!confirmPassword) {
+      setError("Please confirm your password");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match. Please try again.");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long for security");
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
 
     try {
-      const fetchPromise = fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const [res] = await Promise.all([fetchPromise, delay]);
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("Registration successful! Please log in.");
-        navigate("/login");
+      let result;
+      if (role === "student") {
+        result = await registerStudent(name.trim(), email.trim(), password);
       } else {
-        alert(data.message || "Registration failed.");
+        result = await registerLecture(name.trim(), email.trim(), password);
       }
-    } catch (err) {
-      console.error(err);
-      alert("Server error. Please try again later.");
-    } finally {
-      setIsLoading(false);
+
+      if (result.success) {
+        setSuccess(result.message || "Account created successfully! Redirecting to login...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      } else {
+        // Handle specific backend error messages
+        if (result.error?.includes("already exists")) {
+          setError("An account with this email already exists. Please use a different email or try logging in.");
+        } else if (result.error?.includes("network") || result.error?.includes("fetch")) {
+          setError("Network connection failed. Please check your internet connection and try again.");
+        } else if (result.error?.includes("server")) {
+          setError("Server is temporarily unavailable. Please try again in a few minutes.");
+        } else {
+          setError(result.error || "Registration failed. Please try again.");
+        }
+      }
+    } catch (networkError) {
+      console.error("Registration network error:", networkError);
+      setError("Unable to connect to the server. Please check your internet connection and try again.");
     }
   };
 
-  const handleGoogleRegister = () => {
-    // Simulate Google registration - in production, integrate with Google OAuth
-    alert("Google registration simulation: Redirecting to Google...");
-    // For demo, redirect to login
-    navigate("/login");
-  };
-
-  useEffect(() => {
-    AOS.init({ duration: 2000 });
-  }, []);
-
   return (
-    <>
-    {isLoading && (
-      <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white" style={{ zIndex: 9999 }}>
-        <div className="text-center">
-          <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
-            <span className="visually-hidden">Loading...</span>
-          </div>
-          <div className="d-flex justify-content-center mb-2">
-            <div className="dot bg-danger mx-1" style={{ width: '10px', height: '10px', borderRadius: '50%', animation: 'bounce 1.4s infinite ease-in-out both' }}></div>
-            <div className="dot bg-success mx-1" style={{ width: '10px', height: '10px', borderRadius: '50%', animation: 'bounce 1.4s infinite ease-in-out both 0.2s' }}></div>
-            <div className="dot bg-warning mx-1" style={{ width: '10px', height: '10px', borderRadius: '50%', animation: 'bounce 1.4s infinite ease-in-out both 0.4s' }}></div>
-            <div className="dot bg-info mx-1" style={{ width: '10px', height: '10px', borderRadius: '50%', animation: 'bounce 1.4s infinite ease-in-out both 0.6s' }}></div>
-          </div>
-          <p className="fs-4 text-dark">Registering...</p>
-          <style>{`
-            @keyframes bounce {
-              0%, 80%, 100% { transform: scale(0); }
-              40% { transform: scale(1); }
-            }
-          `}</style>
-        </div>
-      </div>
-    )}
-    <section className="container-fluid bg-light vh-100 d-flex justify-content-center align-items-center">
-      <div className="container d-flex align-items-center gap-5 justify-content-center">
-        <div className="col-md-6 col-12 d-flex flex-column justify-content-center align-items-center vh-100">
-          <div
-            data-aos="zoom-in"
-            className="container bg-light d-flex flex-column justify-content-center align-items-center"
-          >
-            <div className="d-flex flex-column align-items-center w-100 mb-3">
-              <img src={ReactoLogo} alt="Reacto Academy" style={{ height: '60px', marginBottom: '10px' }} />
-              <p className="mb-0 lead fs-1">
-                <b>REACTO ACADEMY</b>
+    <section className="container-fluid vh-100 d-flex justify-content-center align-items-center">
+      <div className="container d-flex justify-content-between col gap-5">
+        <div className="col-md-6 p-3 col-12 d-flex flex-column justify-content-center align-items-center gap-3 h-100">
+          <div className="d-flex justify-content-center align-items-center w-100 mb-0">
+            <div>
+              <img src="/reacto-logo.svg" alt="Reacto Academy" style={{ height: "45px", marginBottom: "10px" }} />
+            </div>
+            <div>
+              <p className="lead fs-1">
+                <b> REACTO ACADEMY </b>
               </p>
             </div>
-            <p style={{ color: "#39FF14" }} className="text-center lead fs-3 mb-2">
-              Registration Form...
-            </p>
-            <form
-              onSubmit={handleRegister}
-              className="w-100 flex-column d-flex justify-content-center align-items-center gap-3"
-            >
+          </div>
+          <div className="container bg-white d-flex flex-column justify-content-center align-items-center h-100">
+            <div className="w-100 text-center mb-3">
+              <p style={{ color: "#39FF14" }} className="text-center">
+                Already have an account? <Link to="/login" style={{ color: "#06053d" }}>Login</Link>
+              </p>
+            </div>
+
+            {error && (
+              <div
+                className="alert alert-danger w-100 text-center border-0 shadow-sm"
+                role="alert"
+                style={{
+                  background: 'linear-gradient(45deg, #dc3545, #c82333)',
+                  color: 'white',
+                  borderRadius: '10px'
+                }}
+              >
+                <strong>⚠️ Registration Error:</strong> {error}
+              </div>
+            )}
+
+            {success && (
+              <div
+                className="alert alert-success w-100 text-center border-0 shadow-sm"
+                role="alert"
+                style={{
+                  background: 'linear-gradient(45deg, #28a745, #20c997)',
+                  color: 'white',
+                  borderRadius: '10px'
+                }}
+              >
+                <strong>✅ Success:</strong> {success}
+              </div>
+            )}
+
+            <form onSubmit={handleRegister} className="w-100 flex-column d-flex justify-content-center align-items-center gap-3 mb-3">
               <div className="w-100">
-                <label style={{ color: "#06053d" }} className="lead align-items-center d-flex gap-2" htmlFor="name">
-                  <FaUser />  Name
+                <label style={{ color: "#06053d" }} htmlFor="name" className="lead align-items-center d-flex">
+                  <FaUser className="me-2" /> Full Name
                 </label>
                 <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter full name"
+                  id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  type="text"
-                  className="form-control"
-                  placeholder="Manyika Munyinda"
-                  id="name"
                 />
               </div>
 
               <div className="w-100">
-                <label style={{ color: "#06053d" }} htmlFor="email" className="lead align-items-center gap-2 d-flex">
-                  <FaEnvelopeOpenText />  Email Address
+                <label style={{ color: "#06053d" }} htmlFor="email" className="lead align-items-center d-flex">
+                  <FaEnvelope className="me-2" /> Email Address
                 </label>
                 <input
+                  type="email"
+                  className="form-control"
+                  placeholder="Enter email"
+                  id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  type="email"
-                  className="form-control"
-                  placeholder="example24@gmail.com"
-                  id="email"
                 />
               </div>
 
               <div className="w-100">
-                <label style={{ color: "#06053d" }} htmlFor="password" className="lead align-items-center  gap-2 d-flex">
-                  <FaLock />  Set Password
+                <label style={{ color: "#06053d" }} htmlFor="password" className="lead align-items-center d-flex">
+                  <FaLock className="me-2" /> Password
                 </label>
-                <input
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  type="password"
-                  className="form-control"
-                  placeholder="*********"
-                  id="password"
-                />
+                <div className="input-group">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="form-control"
+                    placeholder="Enter password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{ borderColor: "#06053d", color: "#06053d" }}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="w-100">
+                <label style={{ color: "#06053d" }} htmlFor="confirmPassword" className="lead align-items-center d-flex">
+                  <FaLock className="me-2" /> Confirm Password
+                </label>
+                <div className="input-group">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="form-control"
+                    placeholder="Confirm password"
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{ borderColor: "#06053d", color: "#06053d" }}
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="w-100">
+                <label style={{ color: "#06053d" }} className="lead align-items-center d-flex mb-3">
+                  <FaUser className="me-2" /> Select Role
+                </label>
+                <div className="d-flex gap-4 justify-content-center">
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="role"
+                      id="studentRole"
+                      value="student"
+                      checked={role === "student"}
+                      onChange={(e) => setRole(e.target.value)}
+                      style={{ transform: 'scale(1.2)' }}
+                    />
+                    <label className="form-check-label fw-bold" htmlFor="studentRole" style={{ color: "#06053d", fontSize: '1.1rem' }}>
+                      🎓 Student
+                    </label>
+                  </div>
+                  <div className="form-check">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="role"
+                      id="lectureRole"
+                      value="lecture"
+                      checked={role === "lecture"}
+                      onChange={(e) => setRole(e.target.value)}
+                      style={{ transform: 'scale(1.2)' }}
+                    />
+                    <label className="form-check-label fw-bold" htmlFor="lectureRole" style={{ color: "#06053d", fontSize: '1.1rem' }}>
+                      👨‍🏫 Lecture
+                    </label>
+                  </div>
+                </div>
               </div>
 
               <div className="w-100">
                 <button
                   style={{ backgroundColor: "#06053d", color: "#39FF14" }}
                   type="submit"
-                  className="btn fs-5 w-100 d-flex align-items-center justify-content-center gap-2 mb-2"
-                  disabled={isLoading}
+                  className="btn fs-5 w-100 mb-2"
+                  disabled={loading}
                 >
-                  {isLoading ? (
-                    <div className="spinner-border spinner-border-sm me-2" role="status">
-                      <span className="visually-hidden">Loading...</span>
-                    </div>
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Creating Account...
+                    </>
                   ) : (
-                    <FaSignInAlt />
+                    "Register"
                   )}
-                  {isLoading ? 'Registering...' : 'REGISTER'}
                 </button>
-                <button onClick={handleGoogleRegister} className="btn btn-outline-danger w-100" disabled={isLoading}>
-                  <FaGoogle className='me-2' /> Register with Google
-                </button>
-              </div>
-
-              <div className="w-100">
-                <p style={{ color: "#06053d" }} className="text-center">
-                  Already have an account{" "}
-                  <Link to="/login" style={{ color: "#39FF14" }}>
-                    Login
-                  </Link>
-                </p>
               </div>
             </form>
-            <div className="d-flex justify-content-center mt-3">
+          </div>
+          <div className="gap-3 justify-content-center align-items-center d-flex mt-3">
+            <p style={{ color: "#39FF14" }} className="m-0">
+              Or Register with:
+            </p>
+            <div className="d-flex gap-3">
+              <FaGithub style={{ color: "#06053d", fontSize: "30px", cursor: "pointer" }} />
+              <FaGoogle style={{ color: "#06053d", fontSize: "30px", cursor: "pointer" }} />
+              <FaFacebook style={{ color: "#06053d", fontSize: "30px", cursor: "pointer" }} />
               <Link to="/" className="text-decoration-none">
-                <FaHome size={30} color="#06053d" />
+                <FaHome style={{ color: "#06053d", fontSize: "30px" }} />
               </Link>
             </div>
           </div>
         </div>
 
-        <div className="d-flex h-50 w-50 justify-content-center align-items-center d-none d-md-block">
-          <img src={Reacto} alt="Reacto Academy" className="img-fluid rounded" />
+        <div className="w-100 h-100 d-none d-md-block">
+          <img src={Toon} alt="Toon Coding" className="w-100 rounded" />
         </div>
       </div>
     </section>
-    </>
   );
 };
 

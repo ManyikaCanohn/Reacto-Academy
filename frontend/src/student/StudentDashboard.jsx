@@ -205,7 +205,6 @@ const StudentDashboard = () => {
                                     <code style={{ color: '  #39FF14' }}  className="lead"> System Info </code>
                                     <p className="mb-2 text-white"> Version: v1 . 0 . 0 </p>
                                     <p className="mb-2 text-white"> Last updated: July 7th, 2025 </p>
-                                    {/* <p className="mb-2"> Logged In as: Administrator </p> */}
                                     <p className='text-white'> Developed By: Manyika Munyinda </p>
                                 </div>
             

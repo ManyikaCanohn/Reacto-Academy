@@ -93,9 +93,9 @@ const LandingPage = () => {
 
         <nav style={{ backgroundColor: '#06053d', color: '#39FF14' }} className="navbar navbar-expand-lg navbar-dark fixed-top">
             <div className="container">
-                <a className="navbar-brand" href="/" style={{ color: '#39FF14' }}>
-                    <FaDeskpro size={30} /> Reacto
-                <div>Academy...</div>
+                <a className="navbar-brand d-flex align-items-center" href="/" style={{ color: '#39FF14' }}>
+                    <img src="/reacto-logo.svg" alt="Reacto" style={{ height: '30px', marginRight: '10px' }} />
+                    <div>Reacto<div>Academy...</div></div>
                 </a>
                 <button
                     className="navbar-toggler"

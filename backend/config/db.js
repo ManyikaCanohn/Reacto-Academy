@@ -3,13 +3,12 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    // Modern Mongoose doesn't need deprecated options
+    await mongoose.connect(process.env.MONGO_URI);
     console.log("✅ MongoDB Atlas connected successfully");
   } catch (error) {
     console.error("❌ MongoDB connection failed:", error.message);
+    console.error("❌ Full error details:", error);
     process.exit(1);
   }
 };

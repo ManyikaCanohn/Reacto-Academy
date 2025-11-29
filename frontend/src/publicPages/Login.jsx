@@ -1,57 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import Toon from '../assets/g.jpg'
-import ReactoLogo from '../assets/Reacto.jpg'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { useNavigate, Link } from 'react-router-dom'
 import { FaFacebook, FaGithub, FaWhatsapp, FaGoogle, FaSignInAlt, FaLock, FaVoicemail, FaBookOpen, FaHome} from 'react-icons/fa';
+import { useAuth } from '../context/AppContext';
 
 
 const Login = () => {
     const navigate = useNavigate();
+    const { login, loading } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
 
-        const delay = new Promise(resolve => setTimeout(resolve, 5000)); // Minimum 5 seconds
+        const result = await login(email, password);
 
-        try {
-            const fetchPromise = fetch("http://localhost:5000/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const [res] = await Promise.all([fetchPromise, delay]);
-            const data = await res.json();
-
-            if (res.ok) {
-                // Store token and user
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("user", JSON.stringify(data.user));
-
-                // Redirect based on role
-                if (data.user.role === "admin") {
-                    navigate("/admindashboard");
-                } else if (data.user.role === "student") {
-                    navigate("/studentdashboard");
-                } else if (data.user.role === "lecture") {
-                    navigate("/lecturedashboard");
-                } else {
-                    navigate("/studentdashboard"); // default
-                }
+        if (result.success) {
+            // Redirect based on role
+            if (result.user.role === "student") {
+                navigate("/studentdashboard");
+            } else if (result.user.role === "lecture") {
+                navigate("/lecturedashboard");
             } else {
-                alert(data.message || "Login failed");
+                navigate("/studentdashboard"); // default
             }
-        } catch (err) {
-            console.error(err);
-            alert("Server error. Please try again later.");
-        } finally {
-            setIsLoading(false);
+        } else {
+            alert(result.error || "Login failed");
         }
     };
 
@@ -81,7 +58,7 @@ const Login = () => {
     return (
 
         <>
-        {isLoading && (
+        {loading && (
             <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white" style={{ zIndex: 9999 }}>
                 <div className="text-center">
                     <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
@@ -107,9 +84,13 @@ const Login = () => {
         <section className="container-fluid vh-100 d-flex justify-content-center align-items-center">
             <div className='container d-flex justify-content-between col gap-5'>
                 <div data-aos='zoom-in' className='col-md-6 p-3 col-12 d-flex flex-column justify-content-center align-items-center gap-3 h-100'>
-                    <div className="d-flex flex-column align-items-center w-100 mb-3">
-                        <img src={ReactoLogo} alt="Reacto Academy" style={{ height: '60px', marginBottom: '10px' }} />
-                        <p className="mb-0 lead fs-1"> <b> REACTO ACADEMY </b> </p>
+                    <div className="d-flex justify-content-center align-items-center w-100 mb-0">
+                        <div>
+                                <img src="/reacto-logo.svg" alt="Reacto Academy" style={{ height: '45px', marginBottom: '10px' }} />
+                        </div>
+                        <div>
+                                <p className="lead fs-1"> <b> REACTO ACADEMY </b> </p>
+                        </div>
                     </div>
                     <div className='container bg-white d-flex flex-column justify-content-center align-items-center h-100'>
                         {/* <p style={{ color: ' #06053d'}} className="text-center m-0"> Sign In </p> */}
@@ -128,39 +109,34 @@ const Login = () => {
                                 <input type="password" className="form-control" placeholder='Enter Password' id='password' 
                                     value={password} onChange={(e) => setPassword(e.target.value)} />
                             </div>
-
-                           <div className='w-100'>
-                               <button style={{ backgroundColor: ' #06053d', color: ' #39FF14' }}
-                                   type='submit' className="btn fs-5 w-100 mb-2" disabled={isLoading}>
-                                   {isLoading ? (
-                                       <div className="spinner-border spinner-border-sm me-2" role="status">
-                                           <span className="visually-hidden">Loading...</span>
-                                       </div>
-                                   ) : (
-                                       <FaSignInAlt className='me-2' />
-                                   )}
-                                   {isLoading ? 'Logging in...' : 'Login'}
-                               </button>
-                               <button onClick={handleGoogleLogin} className="btn btn-outline-danger w-100" disabled={isLoading}>
-                                   <FaGoogle className='me-2' /> Login with Google
-                               </button>
-                           </div>
-
+                            <div className='w-100'>
+                                <button style={{ backgroundColor: ' #06053d', color: ' #39FF14' }}
+                                    type='submit' className="btn fs-5 w-100 mb-2" disabled={loading}>
+                                    {loading ? (
+                                        <div className="spinner-border spinner-border-sm me-2" role="status">
+                                            <span className="visually-hidden">Loading...</span>
+                                        </div>
+                                    ) : (
+                                        <FaSignInAlt className='me-2' />
+                                    )}
+                                    {loading ? 'Logging in...' : 'Login'}
+                                </button>
+                            </div>
                         </form>
 
-                    </div>
-                    <div className="d-flex justify-content-center mt-3">
-                        <Link to="/" className="text-decoration-none">
-                            <FaHome size={30} color="#06053d" />
-                        </Link>
                     </div>
                     <div className=" gap-3 justify-content-center align-items-center d-flex mt-3">
                         <p style={{ color: ' #39FF14'}} className=" m-0"> or Login with: </p>
                         {/* <button className="btn btn-outline-success"> Facebook </button> */}
                         <div className="d-flex gap-3">
-                            <FaGithub color='#06053d' size={22} />
-                            <FaGoogle color='#06053d' size={22} />
-                            <FaFacebook color='#06053d' size={22} />
+                            <FaGithub title="Github" color='#06053d' size={30} />
+                            <FaGoogle title="Google" onClick={handleGoogleLogin} color='#06053d' size={30} />
+                            <FaFacebook title="Facebook" color='#06053d' size={30} />
+                            {/* <div className="d-flex justify-content-center mt-3"> */}
+                                <Link to="/" className="text-decoration-none">
+                                    <FaHome size={30} title='Back to landing page' color="#06053d" />
+                                </Link>
+                            {/* </div> */}
                             {/* <FaLinkedin color='#06053d' size={22} /> */}
                         </div>
                     </div>
