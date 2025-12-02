@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelope, FaLock, FaUser, FaGithub, FaGoogle, FaFacebook, FaHome, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaUser, FaGithub, FaGoogle, FaFacebook, FaHome, FaEye, FaEyeSlash, FaLockOpen, FaSortNumericDownAlt, FaUserTie, FaUserGraduate } from "react-icons/fa";
 import { useAuth } from "../context/AppContext";
 import Toon from "../assets/g.jpg";
 
@@ -93,21 +93,23 @@ const Register = () => {
   };
 
   return (
-    <section className="container-fluid vh-100 d-flex justify-content-center align-items-center">
-      <div className="container d-flex justify-content-between col gap-5">
-        <div className="col-md-6 p-3 col-12 d-flex flex-column justify-content-center align-items-center gap-3 h-100">
-          <div className="d-flex justify-content-center align-items-center w-100 mb-0">
+    <section className="container-fluid vh-100">
+      <div className="container  d-flex p-5 align-items-center d-flex justify-content-between gap-5">
+
+        <div className="col-md-6 col-12 d-flex flex-column justify-content-center align-items-center gap-3 h-100">
+          <div className="d-flex justify-content-center align-items-center w-100">
             <div>
-              <img src="/reacto-logo.svg" alt="Reacto Academy" style={{ height: "45px", marginBottom: "10px" }} />
+              <img src="/reacto-logo.svg" alt="Reacto Academy" style={{ height: "35px", marginBottom: "10px" }} />
             </div>
             <div>
-              <p className="lead fs-1">
+              <p className="lead fs-2">
                 <b> REACTO ACADEMY </b>
               </p>
             </div>
           </div>
-          <div className="container bg-white d-flex flex-column justify-content-center align-items-center h-100">
-            <div className="w-100 text-center mb-3">
+          
+          <div className="container bg-white d-flex flex-column justify-content-center align-items-center">
+            <div className="w-100 text-center">
               <p style={{ color: "#39FF14" }} className="text-center">
                 Already have an account? <Link to="/login" style={{ color: "#06053d" }}>Login</Link>
               </p>
@@ -174,7 +176,7 @@ const Register = () => {
 
               <div className="w-100">
                 <label style={{ color: "#06053d" }} htmlFor="password" className="lead align-items-center d-flex">
-                  <FaLock className="me-2" /> Password
+                  <FaLockOpen className="me-2" /> Password
                 </label>
                 <div className="input-group">
                   <input
@@ -190,7 +192,7 @@ const Register = () => {
                     type="button"
                     className="btn btn-outline-secondary"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{ borderColor: "#06053d", color: "#06053d" }}
+                    style={{ color: "#06053d" }}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
@@ -215,7 +217,7 @@ const Register = () => {
                     type="button"
                     className="btn btn-outline-secondary"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    style={{ borderColor: "#06053d", color: "#06053d" }}
+                    style={{ color: "#06053d" }}
                   >
                     {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
@@ -223,11 +225,11 @@ const Register = () => {
               </div>
 
               <div className="w-100">
-                <label style={{ color: "#06053d" }} className="lead align-items-center d-flex mb-3">
-                  <FaUser className="me-2" /> Select Role
+                <label style={{ color: "#06053d" }} className="align-items-center text-decoration-underline d-flex mb-3">
+                    Select Role
                 </label>
-                <div className="d-flex gap-4 justify-content-center">
-                  <div className="form-check">
+                <div className="d-flex gap-4 justify-content-start">
+                  <div className="form-check d-flex align-items-center gap-2">
                     <input
                       className="form-check-input"
                       type="radio"
@@ -236,13 +238,13 @@ const Register = () => {
                       value="student"
                       checked={role === "student"}
                       onChange={(e) => setRole(e.target.value)}
-                      style={{ transform: 'scale(1.2)' }}
+                      style={{ transform: 'scale(1.1)' }}
                     />
-                    <label className="form-check-label fw-bold" htmlFor="studentRole" style={{ color: "#06053d", fontSize: '1.1rem' }}>
-                      🎓 Student
+                    <label className="form-check-label align-items-center d-flex gap-1" htmlFor="studentRole" style={{ color: "#06053d", fontSize: '1.1rem' }}>
+                        <FaUserTie />  Student
                     </label>
                   </div>
-                  <div className="form-check">
+                  <div className="form-check d-flex align-items-center gap-2">
                     <input
                       className="form-check-input"
                       type="radio"
@@ -251,10 +253,10 @@ const Register = () => {
                       value="lecture"
                       checked={role === "lecture"}
                       onChange={(e) => setRole(e.target.value)}
-                      style={{ transform: 'scale(1.2)' }}
+                      style={{ transform: 'scale(1.1)' }}
                     />
-                    <label className="form-check-label fw-bold" htmlFor="lectureRole" style={{ color: "#06053d", fontSize: '1.1rem' }}>
-                      👨‍🏫 Lecture
+                    <label className="form-check-label d-flex align-items-center gap-1" htmlFor="lectureRole" style={{ color: "#06053d", fontSize: '1.1rem' }}>
+                      <FaUserGraduate /> Lecture
                     </label>
                   </div>
                 </div>
@@ -264,32 +266,32 @@ const Register = () => {
                 <button
                   style={{ backgroundColor: "#06053d", color: "#39FF14" }}
                   type="submit"
-                  className="btn fs-5 w-100 mb-2"
+                  className="btn fs-5 w-100 mb-0"
                   disabled={loading}
                 >
                   {loading ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                      Creating Account...
+                      Registering you to Reacto Academy...
                     </>
                   ) : (
-                    "Register"
+                      "⇉ Create Account"
                   )}
                 </button>
               </div>
             </form>
           </div>
-          <div className="gap-3 justify-content-center align-items-center d-flex mt-3">
+          <div className="gap-2 justify-content-center align-items-center d-flex mt-0">
             <p style={{ color: "#39FF14" }} className="m-0">
-              Or Register with:
+              or create account with:
             </p>
             <div className="d-flex gap-3">
-              <FaGithub style={{ color: "#06053d", fontSize: "30px", cursor: "pointer" }} />
-              <FaGoogle style={{ color: "#06053d", fontSize: "30px", cursor: "pointer" }} />
-              <FaFacebook style={{ color: "#06053d", fontSize: "30px", cursor: "pointer" }} />
-              <Link to="/" className="text-decoration-none">
-                <FaHome style={{ color: "#06053d", fontSize: "30px" }} />
-              </Link>
+              <FaGithub style={{ color: "#06053d", fontSize: "20px", cursor: "pointer" }} />
+              <FaGoogle style={{ color: "#06053d", fontSize: "20px", cursor: "pointer" }} />
+              <FaFacebook style={{ color: "#06053d", fontSize: "20px", cursor: "pointer" }} />
+              {/* <Link to="/" className="text-decoration-none">
+                <FaHome style={{ color: "#06053d", fontSize: "25px" }} />
+              </Link> */}
             </div>
           </div>
         </div>

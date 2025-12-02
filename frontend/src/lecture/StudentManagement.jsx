@@ -269,8 +269,14 @@ const StudentManagement = () => {
                         onFocus={(e) => e.target.style.boxShadow = '0 0 0 0.2rem rgba(13, 110, 253, 0.15)'}
                         onBlur={(e) => e.target.style.boxShadow = 'none'}
                       >
-                        <option value="student">🎓 Student</option>
-                        <option value="lecture">👨‍🏫 Lecture</option>
+                        <option value="student">
+                          <FaGraduationCap className="me-2" />
+                          Student
+                        </option>
+                        <option value="lecture">
+                          <FaChalkboardTeacher className="me-2" />
+                          Lecture
+                        </option>
                       </select>
                     </div>
                   </div>
